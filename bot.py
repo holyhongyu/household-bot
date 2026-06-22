@@ -42,7 +42,7 @@ async def post_init(application: Application):
             await application.bot.send_message(
                 chat_id=GROUP_CHAT_ID,
                 text="👋 I'm back online. If you sent /task, /reminder, or "
-                     "anything else while I was offline, please send it again. (v2)",
+                     "anything else while I was offline, please send it again.",
             )
         except Exception:
             logger.exception("Couldn't send the back-online notice to the group.")
