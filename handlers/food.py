@@ -2,6 +2,8 @@
 /food - guided conversation to log a food place recommendation:
   name -> cuisine -> map link/address -> save
 """
+import asyncio
+
 from telegram import Update
 from telegram.ext import (
     ContextTypes, ConversationHandler, CommandHandler,
@@ -35,13 +37,17 @@ async def food_got_map(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     map_link = None if text.lower() == "skip" else text
 
     tg_user = update.effective_user
-    user = get_user_by_telegram_id(tg_user.id)
+    loop = asyncio.get_event_loop()
+    user = await loop.run_in_executor(None, get_user_by_telegram_id, tg_user.id)
 
-    place = create_food_place(
-        name=context.user_data["food_name"],
-        cuisine=context.user_data["food_cuisine"],
-        map_link=map_link,
-        added_by_id=user.id,
+    place = await loop.run_in_executor(
+        None,
+        lambda: create_food_place(
+            name=context.user_data["food_name"],
+            cuisine=context.user_data["food_cuisine"],
+            map_link=map_link,
+            added_by_id=user.id,
+        ),
     )
 
     map_line = f"\n📍 {place.map_link}" if place.map_link else ""
@@ -60,7 +66,8 @@ async def food_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
 
 
 async def list_food(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    places = get_all_food_places()
+    loop = asyncio.get_event_loop()
+    places = await loop.run_in_executor(None, get_all_food_places)
     if not places:
         await update.message.reply_text("🍽️ No food places saved yet. Use /food to add one!")
         return
