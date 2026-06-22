@@ -99,7 +99,7 @@ async def reminder_got_repeat(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     # custom
     await query.edit_message_text(
-        "Type the interval, e.g. `every 4 days` or `every 3 weeks`.",
+        "Type the interval, e.g. `every 3 months`, `every year`, `every 2 weeks`, `every 4 days`.",
         parse_mode="Markdown",
     )
     return ASK_REPEAT_CUSTOM
@@ -107,16 +107,39 @@ async def reminder_got_repeat(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 async def reminder_got_repeat_custom(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     text = update.message.text.strip().lower()
-    match = re.match(r"every (\d+) (day|days|week|weeks)", text)
+    match = re.match(
+        r"every (\d+)? ?(day|days|week|weeks|month|months|year|years)"
+        r"|every (other) (day|week|month|year)"
+        r"|(daily|weekly|monthly|yearly|annually)",
+        text,
+    )
     if not match:
         await update.message.reply_text(
-            "Couldn't parse that. Try `every 4 days` or `every 3 weeks`."
+            "Couldn't parse that. Try `every 3 months`, `every 6 months`, `every year`, `every 2 weeks`, etc.",
+            parse_mode="Markdown",
         )
         return ASK_REPEAT_CUSTOM
 
-    interval, unit = match.groups()
-    interval = int(interval)
-    unit = "day" if unit.startswith("day") else "week"
+    g = match.groups()
+    if g[4]:  # daily/weekly/monthly/yearly/annually
+        word = g[4]
+        unit_map = {"daily": ("day", 1), "weekly": ("week", 1), "monthly": ("month", 1),
+                    "yearly": ("year", 1), "annually": ("year", 1)}
+        unit, interval = unit_map[word]
+    elif g[2]:  # every other X
+        interval = 2
+        unit = g[3].rstrip("s")  # "day","week","month","year"
+    else:
+        interval = int(g[0]) if g[0] else 1
+        raw_unit = g[1]
+        if raw_unit.startswith("day"):
+            unit = "day"
+        elif raw_unit.startswith("week"):
+            unit = "week"
+        elif raw_unit.startswith("month"):
+            unit = "month"
+        else:
+            unit = "year"
 
     context.user_data["recurrence_unit"] = unit
     context.user_data["recurrence_interval"] = interval
@@ -246,15 +269,20 @@ def _describe_recurrence(reminder) -> str:
     if not reminder.recurrence_unit:
         return ""
 
-    if reminder.recurrence_unit == "day":
-        unit_label = "day" if reminder.recurrence_interval == 1 else "days"
-        base = f"every {reminder.recurrence_interval} {unit_label}" if reminder.recurrence_interval > 1 else "daily"
-    else:  # week
-        if reminder.recurrence_interval == 1:
+    unit = reminder.recurrence_unit
+    n = reminder.recurrence_interval
+    if unit == "day":
+        base = "daily" if n == 1 else f"every {n} days"
+    elif unit == "week":
+        if n == 1:
             day_name = WEEKDAYS[reminder.recurrence_weekday].capitalize()
             base = f"weekly on {day_name}"
         else:
-            base = f"every {reminder.recurrence_interval} weeks"
+            base = f"every {n} weeks"
+    elif unit == "month":
+        base = "monthly" if n == 1 else f"every {n} months"
+    else:  # year
+        base = "yearly" if n == 1 else f"every {n} years"
 
     if reminder.recurrence_max_count:
         return f" (repeats {base}, {reminder.recurrence_max_count}x)"

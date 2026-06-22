@@ -1,5 +1,8 @@
 # Changelog
 
+### 2026-06-22 (4)
+- Reminders now understand monthly and yearly recurrence — "every 3 months", "every year", "every 6 months" etc all work correctly, including proper month-end date handling
+
 ### 2026-06-22 (3)
 - Added /summary which sends two messages: tasks + reminders first, then food places + recipes — one command to see everything
 

@@ -36,13 +36,27 @@ def _compute_next_occurrence(reminder, now: datetime) -> datetime:
     structured recurrence fields. Called only when the reminder is
     confirmed to still be recurring (end condition checked separately).
     """
-    if reminder.recurrence_unit == "day":
-        return reminder.remind_at + timedelta(days=reminder.recurrence_interval)
+    unit = reminder.recurrence_unit
+    n = reminder.recurrence_interval
+    base = reminder.remind_at
 
-    # week: jump forward by N weeks, landing on the same weekday/time it
-    # was originally set for (recurrence_weekday), not just "+7 days",
-    # so a custom "every 3 weeks" still lands on the right day.
-    return reminder.remind_at + timedelta(weeks=reminder.recurrence_interval)
+    if unit == "day":
+        return base + timedelta(days=n)
+    if unit == "week":
+        return base + timedelta(weeks=n)
+    if unit == "month":
+        month = base.month - 1 + n
+        year = base.year + month // 12
+        month = month % 12 + 1
+        import calendar
+        day = min(base.day, calendar.monthrange(year, month)[1])
+        return base.replace(year=year, month=month, day=day)
+    # year
+    try:
+        return base.replace(year=base.year + n)
+    except ValueError:
+        # Feb 29 in a non-leap year
+        return base.replace(year=base.year + n, day=28)
 
 
 def _has_reached_end_condition(reminder, next_occurrence: datetime) -> bool:
