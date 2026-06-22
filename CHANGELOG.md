@@ -1,5 +1,9 @@
 # Changelog
 
+### 2026-06-22 (5)
+- Fixed Postgres connection on Railway — switched from psycopg2 to psycopg3 which bundles its own PostgreSQL library, resolving the libpq.so.5 crash
+- Data (users, tasks, reminders, food places, recipes) now fully persists across all future deploys — no more losing anything when the bot updates
+
 ### 2026-06-22 (4)
 - Reminders now understand monthly and yearly recurrence — "every 3 months", "every year", "every 6 months" etc all work correctly, including proper month-end date handling
 
