@@ -30,17 +30,16 @@ def init_db():
 
 def _migrate(eng):
     """Add columns/tables that were introduced after the initial schema."""
+    import sqlalchemy as sa
     with eng.connect() as conn:
-        # reminders: assignee fields added in v2
-        existing = {row[1] for row in conn.execute(
-            __import__("sqlalchemy").text("PRAGMA table_info(reminders)")
-        )}
+        inspector = sa.inspect(eng)
+        existing = {col["name"] for col in inspector.get_columns("reminders")}
         if "assigned_to_id" not in existing:
-            conn.execute(__import__("sqlalchemy").text(
+            conn.execute(sa.text(
                 "ALTER TABLE reminders ADD COLUMN assigned_to_id INTEGER REFERENCES users(id)"
             ))
         if "assigned_both" not in existing:
-            conn.execute(__import__("sqlalchemy").text(
+            conn.execute(sa.text(
                 "ALTER TABLE reminders ADD COLUMN assigned_both BOOLEAN DEFAULT 0"
             ))
         conn.commit()
