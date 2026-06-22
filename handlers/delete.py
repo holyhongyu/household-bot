@@ -13,11 +13,12 @@ from database.crud import (
     get_pending_tasks, get_task_by_id, delete_task,
     get_active_reminders, get_reminder_by_id, delete_reminder,
     get_all_food_places, get_food_place_by_id, delete_food_place,
+    get_all_recipes, get_recipe_by_id, delete_recipe,
 )
 
 PICK_TYPE, PICK_ITEMS = range(2)
 
-_TYPE_LABELS = {"task": "Task", "reminder": "Reminder", "food": "Food Place"}
+_TYPE_LABELS = {"task": "Task", "reminder": "Reminder", "food": "Food Place", "recipe": "Recipe"}
 
 
 def _type_keyboard() -> InlineKeyboardMarkup:
@@ -25,6 +26,7 @@ def _type_keyboard() -> InlineKeyboardMarkup:
         [InlineKeyboardButton("📝 Tasks", callback_data="deltype:task")],
         [InlineKeyboardButton("⏰ Reminders", callback_data="deltype:reminder")],
         [InlineKeyboardButton("🍽️ Food Places", callback_data="deltype:food")],
+        [InlineKeyboardButton("📖 Recipes", callback_data="deltype:recipe")],
         [InlineKeyboardButton("❌ Cancel", callback_data="delcancel")],
     ])
 
@@ -34,6 +36,8 @@ def _item_label(item, item_type: str) -> str:
         return item.description
     if item_type == "reminder":
         return item.text
+    if item_type == "recipe":
+        return f"{item.name} [{item.tag}]"
     return f"{item.name} ({item.cuisine})"
 
 
@@ -66,6 +70,8 @@ def _load_items(item_type: str):
         return get_pending_tasks()
     if item_type == "reminder":
         return get_active_reminders()
+    if item_type == "recipe":
+        return get_all_recipes()
     return get_all_food_places()
 
 
@@ -130,6 +136,8 @@ async def delete_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             deleted += delete_task(item_id)
         elif item_type == "reminder":
             deleted += delete_reminder(item_id)
+        elif item_type == "recipe":
+            deleted += delete_recipe(item_id)
         else:
             deleted += delete_food_place(item_id)
 

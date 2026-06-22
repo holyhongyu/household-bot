@@ -6,7 +6,7 @@ and in one place if the schema or backend ever changes.
 from datetime import datetime
 from typing import Optional
 
-from database.models import User, Task, Reminder, FoodPlace, TaskStatus, Priority
+from database.models import User, Task, Reminder, FoodPlace, Recipe, TaskStatus, Priority
 from database.session import SessionLocal
 
 
@@ -269,5 +269,36 @@ def delete_food_place(place_id: int) -> bool:
         if not place:
             return False
         session.delete(place)
+        session.commit()
+        return True
+
+
+# ---------- Recipes ----------
+
+def create_recipe(name: str, tag: str, link_or_desc: Optional[str], added_by_id: int) -> Recipe:
+    with SessionLocal() as session:
+        recipe = Recipe(name=name, tag=tag, link_or_desc=link_or_desc, added_by_id=added_by_id)
+        session.add(recipe)
+        session.commit()
+        session.refresh(recipe)
+        return recipe
+
+
+def get_all_recipes() -> list[Recipe]:
+    with SessionLocal() as session:
+        return session.query(Recipe).order_by(Recipe.tag.asc(), Recipe.name.asc()).all()
+
+
+def get_recipe_by_id(recipe_id: int) -> Optional[Recipe]:
+    with SessionLocal() as session:
+        return session.query(Recipe).filter_by(id=recipe_id).first()
+
+
+def delete_recipe(recipe_id: int) -> bool:
+    with SessionLocal() as session:
+        recipe = session.query(Recipe).filter_by(id=recipe_id).first()
+        if not recipe:
+            return False
+        session.delete(recipe)
         session.commit()
         return True

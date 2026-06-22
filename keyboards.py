@@ -99,6 +99,19 @@ def reminder_assignee_keyboard(users: list) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(buttons)
 
 
+BUILTIN_TAGS = ["Main Meal", "Snack", "Drink"]
+
+
+def recipe_tag_keyboard() -> InlineKeyboardMarkup:
+    buttons = [
+        [InlineKeyboardButton("🥘 Main Meal", callback_data="recipetag:Main Meal")],
+        [InlineKeyboardButton("🍿 Snack", callback_data="recipetag:Snack")],
+        [InlineKeyboardButton("☕ Drink", callback_data="recipetag:Drink")],
+        [InlineKeyboardButton("🏷️ Custom (type it)", callback_data="recipetag:__custom__")],
+    ]
+    return InlineKeyboardMarkup(buttons)
+
+
 def cancel_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         [[InlineKeyboardButton("❌ Cancel", callback_data="cancel")]]

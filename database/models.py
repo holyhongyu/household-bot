@@ -129,6 +129,20 @@ class FoodPlace(Base):
     added_by = relationship("User", foreign_keys=[added_by_id])
 
 
+class Recipe(Base):
+    """A saved recipe with a tag (Main Meal, Snack, Drink, or custom)."""
+    __tablename__ = "recipes"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    tag = Column(String(100), nullable=False)
+    link_or_desc = Column(String(500), nullable=True)
+    added_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    added_by = relationship("User", foreign_keys=[added_by_id])
+
+
 class Expense(Base):
     """Not wired up to any handler yet - reserved for a future /expense command."""
     __tablename__ = "expenses"

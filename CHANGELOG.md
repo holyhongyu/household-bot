@@ -1,7 +1,13 @@
 # Changelog
 
+### 2026-06-22 (2)
+- Added /recipe to save recipes with a tag (Main Meal, Snack, Drink, or your own custom tag) plus an optional description or link
+- Added /recipes to view all saved recipes grouped by tag
+- /delete now includes Recipes alongside Tasks, Reminders, and Food Places
+
 ### 2026-06-22
 - Fixed /food command freezing after you enter the Google Maps link — the bot now saves the place correctly and confirms it
+- Switched from SQLite to PostgreSQL on Railway so all data (users, tasks, food places, reminders) now persists across deploys — no more losing everything when the bot updates
 
 ### 2026-06-21
 - Added Google Calendar integration — Hongyu's upcoming events for the next 7 days now appear automatically at the top of the daily summary
