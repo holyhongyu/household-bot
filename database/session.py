@@ -16,9 +16,11 @@ from database.models import Base
 # handlers in an async event loop, not the thread SQLite was opened on.
 # This is safe here because APScheduler/PTB hand off work sequentially
 # per chat, not truly concurrently writing the same rows.
-connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
-
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+if DATABASE_URL.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+    engine = create_engine(DATABASE_URL, connect_args=connect_args)
+else:
+    engine = create_engine(DATABASE_URL, connect_args={"sslmode": "require"})
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
 
