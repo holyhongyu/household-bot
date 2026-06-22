@@ -15,7 +15,7 @@ from database.crud import (
 )
 from database.models import Priority
 from keyboards import assignee_keyboard, due_date_keyboard, priority_keyboard, cancel_keyboard
-from config import GOOGLE_CREDENTIALS_FILE, GOOGLE_CALENDAR_ID, GOOGLE_CALENDAR_USER, TIMEZONE
+from config import GOOGLE_CALENDAR_ENABLED, GOOGLE_CALENDAR_ID, GOOGLE_CALENDAR_USER, TIMEZONE
 
 # Conversation states
 ASK_NAME, ASK_ASSIGNEE, ASK_DUE, ASK_PRIORITY = range(4)
@@ -272,9 +272,9 @@ def build_today_message() -> str:
 
     lines = ["🏠 *Baboo's Magic Task List*"]
 
-    if GOOGLE_CREDENTIALS_FILE and GOOGLE_CALENDAR_ID:
+    if GOOGLE_CALENDAR_ENABLED:
         from calendar_client import get_week_events, format_calendar_section
-        cal_events = get_week_events(GOOGLE_CREDENTIALS_FILE, GOOGLE_CALENDAR_ID, TIMEZONE)
+        cal_events = get_week_events(None, GOOGLE_CALENDAR_ID, TIMEZONE)
         lines.extend(format_calendar_section(cal_events, TIMEZONE))
 
     if todays_reminders or tomorrows_reminders:

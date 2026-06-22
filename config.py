@@ -28,6 +28,8 @@ if GROUP_CHAT_ID:
 
 # Google Calendar integration (optional — skipped if not configured)
 GOOGLE_CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE")
+GOOGLE_CREDENTIALS_JSON = os.getenv("GOOGLE_CREDENTIALS_JSON")
 GOOGLE_CALENDAR_ID = os.getenv("GOOGLE_CALENDAR_ID")
+GOOGLE_CALENDAR_ENABLED = bool(GOOGLE_CALENDAR_ID and (GOOGLE_CREDENTIALS_FILE or GOOGLE_CREDENTIALS_JSON))
 # Which user's section in /today the calendar events appear under
 GOOGLE_CALENDAR_USER = os.getenv("GOOGLE_CALENDAR_USER", "Hongyu")
