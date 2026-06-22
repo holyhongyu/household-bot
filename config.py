@@ -10,7 +10,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///household.db")
+_db_url = os.getenv("DATABASE_URL", "sqlite:///household.db")
+# SQLAlchemy needs postgresql+psycopg:// for psycopg3
+DATABASE_URL = _db_url.replace("postgresql://", "postgresql+psycopg://", 1) if _db_url.startswith("postgresql://") else _db_url
 TIMEZONE = os.getenv("TIMEZONE", "UTC")
 GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID")  # optional, set after first /chatid
 
