@@ -81,7 +81,12 @@ def build_app() -> Application:
 
 
 def main():
-    init_db()
+    logger.info(f"Connecting to database...")
+    try:
+        init_db()
+    except Exception as e:
+        logger.exception(f"Database init failed: {e}")
+        raise
     logger.info("Database ready.")
 
     # If the process gets killed/crashes unexpectedly (network blip, laptop
