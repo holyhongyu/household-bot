@@ -64,13 +64,13 @@ def build_app() -> Application:
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("chatid", chatid))
-    app.add_handler(task_conversation)
     app.add_handler(CommandHandler("today", today))
     app.add_handler(CommandHandler("done", done))
-    app.add_handler(reminder_conversation)
     app.add_handler(CommandHandler("reminders", list_reminders))
-    app.add_handler(food_conversation)
     app.add_handler(CommandHandler("foodlist", list_food))
+    app.add_handler(task_conversation)
+    app.add_handler(reminder_conversation)
+    app.add_handler(food_conversation)
     app.add_handler(delete_conversation)
     return app
 
