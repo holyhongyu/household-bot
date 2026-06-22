@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-DATABASE_URL = os.getenv("DATABASE_PUBLIC_URL") or os.getenv("DATABASE_URL", "sqlite:///household.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///household.db")
 TIMEZONE = os.getenv("TIMEZONE", "UTC")
 GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID")  # optional, set after first /chatid
 
