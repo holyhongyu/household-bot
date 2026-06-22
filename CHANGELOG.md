@@ -1,5 +1,8 @@
 # Changelog
 
+### 2026-06-22 (3)
+- Added /summary which sends two messages: tasks + reminders first, then food places + recipes — one command to see everything
+
 ### 2026-06-22 (2)
 - Added /recipe to save recipes with a tag (Main Meal, Snack, Drink, or your own custom tag) plus an optional description or link
 - Added /recipes to view all saved recipes grouped by tag

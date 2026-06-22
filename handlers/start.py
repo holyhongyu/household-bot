@@ -26,7 +26,8 @@ HELP_TEXT = (
     "/recipe - save a recipe\n"
     "/recipes - see all saved recipes\n"
     "\n*Other*\n"
-    "/delete - delete tasks, reminders, or food places\n"
+    "/summary - full household overview (tasks, reminders, food, recipes)\n"
+    "/delete - delete tasks, reminders, food places, or recipes\n"
     "/help - show this message\n"
 )
 

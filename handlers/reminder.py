@@ -265,20 +265,20 @@ def _describe_recurrence(reminder) -> str:
 
 # ---------- /reminders ----------
 
-async def list_reminders(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Lists every active reminder, not just today/tomorrow (that's what /today's reminder section is for)."""
+def build_reminders_text() -> str:
     reminders = get_active_reminders()
-
     if not reminders:
-        await update.message.reply_text("⏰ No active reminders.")
-        return
-
+        return "⏰ *All Active Reminders*\n_No active reminders._"
     lines = ["⏰ *All Active Reminders*"]
     for r in reminders:
         recur_label = _describe_recurrence(r)
         lines.append(f"\n• {r.text}\n  {r.remind_at.strftime('%a %d %b, %I:%M%p')}{recur_label}")
+    return "\n".join(lines)
 
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+
+async def list_reminders(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Lists every active reminder, not just today/tomorrow (that's what /today's reminder section is for)."""
+    await update.message.reply_text(build_reminders_text(), parse_mode="Markdown")
 
 
 async def reminder_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

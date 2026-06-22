@@ -63,18 +63,19 @@ async def food_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     return ConversationHandler.END
 
 
-async def list_food(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def build_foodlist_text() -> str:
     places = get_all_food_places()
     if not places:
-        await update.message.reply_text("🍽️ No food places saved yet. Use /food to add one!")
-        return
-
+        return "🍽️ *Food Places*\n_No food places saved yet._"
     lines = ["🍽️ *Food Places*"]
     for p in places:
         map_part = f"\n  📍 {p.map_link}" if p.map_link else ""
         lines.append(f"\n• *{p.name}* — {p.cuisine}{map_part}")
+    return "\n".join(lines)
 
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+
+async def list_food(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(build_foodlist_text(), parse_mode="Markdown")
 
 
 food_conversation = ConversationHandler(

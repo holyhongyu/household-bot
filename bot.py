@@ -16,6 +16,7 @@ from handlers.task import task_conversation, today, done
 from handlers.reminder import reminder_conversation, list_reminders
 from handlers.food import food_conversation, list_food
 from handlers.recipe import recipe_conversation, list_recipes
+from handlers.summary import summary
 from handlers.delete import delete_conversation
 from scheduler.jobs import start_scheduler
 
@@ -70,6 +71,7 @@ def build_app() -> Application:
     app.add_handler(CommandHandler("reminders", list_reminders))
     app.add_handler(CommandHandler("foodlist", list_food))
     app.add_handler(CommandHandler("recipes", list_recipes))
+    app.add_handler(CommandHandler("summary", summary))
     app.add_handler(task_conversation)
     app.add_handler(reminder_conversation)
     app.add_handler(food_conversation)

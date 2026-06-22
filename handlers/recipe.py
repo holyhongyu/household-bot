@@ -90,13 +90,11 @@ async def recipe_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     return ConversationHandler.END
 
 
-async def list_recipes(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def build_recipes_text() -> str:
     recipes = get_all_recipes()
     if not recipes:
-        await update.message.reply_text("📖 No recipes saved yet. Use /recipe to add one!")
-        return
+        return "📖 *Recipes*\n_No recipes saved yet._"
 
-    # Group: built-in tags first (in order), then custom tags alphabetically
     groups: dict[str, list] = {}
     for r in recipes:
         groups.setdefault(r.tag, []).append(r)
@@ -110,8 +108,11 @@ async def list_recipes(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for r in groups[tag]:
             extra = f" — {r.link_or_desc}" if r.link_or_desc else ""
             lines.append(f"• {r.name}{extra}")
+    return "\n".join(lines)
 
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+
+async def list_recipes(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(build_recipes_text(), parse_mode="Markdown")
 
 
 recipe_conversation = ConversationHandler(
