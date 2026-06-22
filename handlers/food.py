@@ -2,15 +2,13 @@
 /food - guided conversation to log a food place recommendation:
   name -> cuisine -> map link/address -> save
 """
-import asyncio
-
 from telegram import Update
 from telegram.ext import (
     ContextTypes, ConversationHandler, CommandHandler,
     MessageHandler, filters,
 )
 
-from database.crud import get_user_by_telegram_id, create_food_place, get_all_food_places
+from database.crud import get_or_create_user, create_food_place, get_all_food_places
 
 ASK_NAME, ASK_CUISINE, ASK_MAP = range(3)
 
@@ -37,18 +35,18 @@ async def food_got_map(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     map_link = None if text.lower() == "skip" else text
 
     tg_user = update.effective_user
-    loop = asyncio.get_event_loop()
-    user = await loop.run_in_executor(None, get_user_by_telegram_id, tg_user.id)
-
-    place = await loop.run_in_executor(
-        None,
-        lambda: create_food_place(
+    try:
+        user = get_or_create_user(telegram_id=tg_user.id, display_name=tg_user.first_name or "User")
+        place = create_food_place(
             name=context.user_data["food_name"],
             cuisine=context.user_data["food_cuisine"],
             map_link=map_link,
             added_by_id=user.id,
-        ),
-    )
+        )
+    except Exception as e:
+        await update.message.reply_text(f"❌ Something went wrong saving the place: {e}")
+        context.user_data.clear()
+        return ConversationHandler.END
 
     map_line = f"\n📍 {place.map_link}" if place.map_link else ""
     await update.message.reply_text(
@@ -66,8 +64,7 @@ async def food_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
 
 
 async def list_food(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    loop = asyncio.get_event_loop()
-    places = await loop.run_in_executor(None, get_all_food_places)
+    places = get_all_food_places()
     if not places:
         await update.message.reply_text("🍽️ No food places saved yet. Use /food to add one!")
         return
